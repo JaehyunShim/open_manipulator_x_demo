@@ -1,4 +1,4 @@
-# TurtleBot3 Demo
+# OpenMANIPULATOR-X ROS2 Demo
 
 ## Usage
 
