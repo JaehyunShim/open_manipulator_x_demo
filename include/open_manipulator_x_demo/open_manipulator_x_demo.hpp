@@ -20,37 +20,34 @@
 #define OPEN_MANIPULATOR_X_DEMO_HPP_
 
 #include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/joint_state.hpp>
-#include <sensor_msgs/msg/joy.hpp>
+
 #include "open_manipulator_msgs/srv/set_joint_position.hpp"
 #include "open_manipulator_msgs/srv/set_kinematics_pose.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
 
-#define PI 3.14159265359
 
-namespace open_manipulator_x_demo
-{
 class OpenManipulatorXDemo : public rclcpp::Node
 {
  public:
   OpenManipulatorXDemo();
-  virtual ~OpenManipulatorXDemo();
+  ~OpenManipulatorXDemo();
 
  private:
-  /*****************************************************************************
-  ** ROS Clients
-  *****************************************************************************/
+  // ROS clients
   rclcpp::Client<open_manipulator_msgs::srv::SetJointPosition>::SharedPtr goal_joint_space_path_client_;
   rclcpp::Client<open_manipulator_msgs::srv::SetJointPosition>::SharedPtr goal_tool_control_client_;
 
-  /*****************************************************************************
-  ** Callback Functions and Relevant Functions
-  *****************************************************************************/
+  // ROS timers
+  rclcpp::TimerBase::SharedPtr process_timer_;
+
+  uint8_t state_ = 0;
+
+  // Callback Functions and Relevant Functions
   void joint_states_callback(const sensor_msgs::msg::JointState::SharedPtr msg);
   void kinematics_pose_callback(const open_manipulator_msgs::msg::KinematicsPose::SharedPtr msg);
+  void process_callback();
 
   bool set_joint_space_path(std::vector<std::string> joint_name, std::vector<double> joint_angle, double path_time);
   bool set_tool_control(std::vector<double> joint_angle);
-
 };
-}  // namespace open_manipulator_x_teleop_joystick
-#endif  // OPEN_MANIPULATOR_X_TELEOP_JOYSTICK_HPP_
+#endif  // OPEN_MANIPULATOR_X_DEMO_HPP_

@@ -21,8 +21,7 @@
 using namespace std::placeholders;
 using namespace std::chrono_literals;
 
-namespace open_manipulator_x_demo
-{
+
 OpenManipulatorXDemo::OpenManipulatorXDemo()
 : Node("open_manipulator_x_demo")
 {
@@ -34,9 +33,9 @@ OpenManipulatorXDemo::OpenManipulatorXDemo()
   goal_tool_control_client_ = this->create_client<open_manipulator_msgs::srv::SetJointPosition>("open_manipulator_x/goal_tool_control");
 
   /********************************************************************************
-  ** Display in terminal
+  ** Initialise timers
   ********************************************************************************/
-  timer_ = this->create_wall_timer(10ms, std::bind(&OpenManipulatorXDemo::publish_callback, this));
+  process_timer_ = this->create_wall_timer(2.5s, std::bind(&OpenManipulatorXDemo::process_callback, this));
 
   RCLCPP_INFO(this->get_logger(), "OpenManipulator-X demo has been initialised.");
 }
@@ -84,10 +83,74 @@ bool OpenManipulatorXDemo::set_tool_control(std::vector<double> joint_angle)
   return false;
 }
 
-void OpenManipulatorXDemo::publish_callback()  
+void OpenManipulatorXDemo::process_callback()
 {
+  std::vector<std::string> joint_name;
+  std::vector<double> joint_angle;
+  double path_time;
+  if (state_ == 0)
+  {
+    path_time = 2.0;  // unit: s
+    joint_name.push_back("joint1"); joint_angle.push_back(1.57);
+    joint_name.push_back("joint2"); joint_angle.push_back(-1.2);
+    joint_name.push_back("joint3"); joint_angle.push_back(0.3);
+    joint_name.push_back("joint4"); joint_angle.push_back(0.9);
+    set_joint_space_path(joint_name, joint_angle, path_time);
+    state_++;
+  }
+  else if (state_ == 1)
+  {
+    path_time = 2.0;
+    joint_name.push_back("joint1"); joint_angle.push_back(-1.57);
+    joint_name.push_back("joint2"); joint_angle.push_back(-1.2);
+    joint_name.push_back("joint3"); joint_angle.push_back(0.3);
+    joint_name.push_back("joint4"); joint_angle.push_back(0.9);
+    set_joint_space_path(joint_name, joint_angle, path_time);
+    state_++;
+  }
+  else if (state_ == 2)
+  {
+    path_time = 2.0;
+    joint_name.push_back("joint1"); joint_angle.push_back(0.0);
+    joint_name.push_back("joint2"); joint_angle.push_back(0.5);
+    joint_name.push_back("joint3"); joint_angle.push_back(1.0);
+    joint_name.push_back("joint4"); joint_angle.push_back(-1.5);
+    set_joint_space_path(joint_name, joint_angle, path_time);
+    state_++;
+  }
+  else if (state_ == 3)
+  {
+    path_time = 2.0;
+    joint_name.push_back("joint1"); joint_angle.push_back(0.0);
+    joint_name.push_back("joint2"); joint_angle.push_back(0.7);
+    joint_name.push_back("joint3"); joint_angle.push_back(0.4);
+    joint_name.push_back("joint4"); joint_angle.push_back(-1.1);
+    set_joint_space_path(joint_name, joint_angle, path_time);
+    state_++;
+  }
+  else if (state_ == 4)
+  {
+    joint_angle.push_back(0.01);
+    set_tool_control(joint_angle);
+    state_++;
+  }
+  else if (state_ == 5)
+  {
+    joint_angle.push_back(-0.01);
+    set_tool_control(joint_angle);
+    state_++;
+  }
+  else if (state_ == 6)
+  {
+    path_time = 2.0;
+    joint_name.push_back("joint1"); joint_angle.push_back(0.0);
+    joint_name.push_back("joint2"); joint_angle.push_back(0.5);
+    joint_name.push_back("joint3"); joint_angle.push_back(1.0);
+    joint_name.push_back("joint4"); joint_angle.push_back(-1.5);
+    set_joint_space_path(joint_name, joint_angle, path_time);
+    state_ = 0;
+  }
 }
-}  // namespace open_manipulator_x_demo
 
 /********************************************************************************
 ** Main
@@ -95,7 +158,7 @@ void OpenManipulatorXDemo::publish_callback()
 int main(int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<open_manipulator_x_demo::OpenManipulatorXDemo>());
+  rclcpp::spin(std::make_shared<OpenManipulatorXDemo>());
   rclcpp::shutdown();
 
   return 0;
