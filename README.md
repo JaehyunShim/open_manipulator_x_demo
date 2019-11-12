@@ -23,10 +23,9 @@ $ git clone https://github.com/ROBOTIS-GIT/robotis_manipulator.git -b ros2
 $ git clone https://github.com/ROBOTIS-GIT/open_manipulator_msgs.git -b ros2
 $ git clone https://github.com/ROBOTIS-GIT/open_manipulator.git -b ros2
 $ git clone https://github.com/rjshim/open_manipulator_x_demo.git
-$ cd ~/robotis_ws && colcon build --symlink-install
 
 (Build)
-$ cd ~/catkin_ws && catkin_make
+$ cd ~/robotis_ws && colcon build --symlink-install
 ```
 
 ### Execute ROS packages
